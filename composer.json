@@ -1,0 +1,23 @@
+{
+    "name": "tuupola/slim-image-resize",
+    "type": "library",
+    "description": "Image Resize Middleware for Slim Framework",
+    "keywords": ["slim", "middleware", "image"],
+    "homepage": "https://github.com/tuupola/slim-image-resize",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mika Tuupola",
+            "email": "tuupola@appelsiini.net",
+            "homepage": "http://www.appelsiini.net/"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "slim/slim": ">=2.3.0",
+        "intervention/image": "1.*"
+    },
+    "autoload": {
+        "psr-0": { "Slim\\Middleware\\": "src/" }
+    }
+}
