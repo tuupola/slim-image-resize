@@ -18,7 +18,7 @@ class ImageResize extends \Slim\Middleware {
         /* Default options. */
         $this->options = array(
             "extensions" => array("jpg", "jpeg", "png", "gif"),
-            "cache" => false
+            "cache" => "cache"
         );
 
         if ($options) {
@@ -33,6 +33,9 @@ class ImageResize extends \Slim\Middleware {
         $target   = $request->getResourceUri();
         $pathinfo = pathinfo($target);
 
+        $cache    = $_SERVER["DOCUMENT_ROOT"] . "/" .
+                    $this->options["cache"] . $target;
+
         if ($this->shouldResize($pathinfo)) {
             preg_match("/([^-]+)-(\d*)x(\d*)/", $pathinfo["filename"], $matches);
 
@@ -44,10 +47,20 @@ class ImageResize extends \Slim\Middleware {
 
             $image = Image::make($source);
 
-            if (null !== $width &&  null !== $height) {
+            /* Crop or resize. */
+            if (null !== $width && null !== $height) {
                 $image->grab($width, $height);
             } else {
                 $image->resize($width, $height, true);
+            }
+
+            /* When requested save image to cache folder. */
+            if ($this->options["cache"]) {
+                $dir = pathinfo($cache, PATHINFO_DIRNAME);
+                if (false === is_dir($dir)) {
+                    mkdir($dir, 0777, true);
+                }
+                $image->save($cache);
             }
 
             $response->header("Content-type", $image->mime);

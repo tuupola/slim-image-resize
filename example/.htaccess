@@ -1,5 +1,10 @@
 RewriteEngine On
 RewriteBase /
 
+# Check for cached image in cache folder.
+RewriteCond %{REQUEST_METHOD} ^GET$
+RewriteCond %{DOCUMENT_ROOT}/cache/%{REQUEST_URI} -f
+RewriteRule ^(.*)$ /cache/$1 [L,QSA]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.php [QSA,L]
