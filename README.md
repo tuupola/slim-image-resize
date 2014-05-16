@@ -9,7 +9,7 @@ You can install the middleware using composer.
 ```javascript
 {
     "require": {
-        "tuupola/slim-image-resize": "dev-master",
+        "tuupola/slim-image-resize": "dev-master"
     }
 }
 ```
@@ -47,13 +47,13 @@ RewriteRule ^(.*)$ /cache/$1 [L,QSA]
 With middleware configured you can create different sizes of images by altering the filename.
 
 ```html
-    <!-- This is the original image -->
-    <img src="images/viper.jpg">
-    <!-- Images below will be resized -->
-    <img src="images/viper-400x200.jpg">
-    <img src="images/viper-x200.jpg">
-    <img src="images/viper-200x.jpg">
-    <img src="images/viper-100x100.jpg">
+<!-- This is the original image -->
+<img src="images/viper.jpg">
+<!-- Images below will be resized -->
+<img src="images/viper-400x200.jpg">
+<img src="images/viper-x200.jpg">
+<img src="images/viper-200x.jpg">
+<img src="images/viper-100x100.jpg">
 ```
 
 HTML above will produce the following images.
