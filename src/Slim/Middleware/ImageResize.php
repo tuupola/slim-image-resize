@@ -18,7 +18,8 @@ class ImageResize extends \Slim\Middleware {
         /* Default options. */
         $this->options = array(
             "extensions" => array("jpg", "jpeg", "png", "gif"),
-            "cache" => "cache"
+            "cache" => "cache",
+            "quality" => 90
         );
 
         if ($options) {
@@ -60,7 +61,7 @@ class ImageResize extends \Slim\Middleware {
                 if (false === is_dir($dir)) {
                     mkdir($dir, 0777, true);
                 }
-                $image->save($cache);
+                $image->save($cache, $this->options["quality"]);
             }
 
             $response->header("Content-type", $image->mime);

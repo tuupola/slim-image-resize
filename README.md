@@ -23,13 +23,14 @@ $app = new \Slim\Slim();
 $app->add(new Slim\Middleware\ImageResize());
 ```
 
-You can configure the allowed image extensions and cache folder. Cache folder must be writable by webserver process. Example options shown below are also the default options used by the middleware.
+You can configure the allowed image extensions and cache folder. Cache folder must be writable by webserver process. Image quality applies only for jpg images. Example options shown below are also the default options used by the middleware.
 
 ```php
 $app = new \Slim\Slim();
 $app->add(new Slim\Middleware\ImageResize(array(
     "extensions" => array("jpg", "jpeg", "png", "gif"),
-    "cache" => "cache"
+    "cache" => "cache",
+    "quality" => 90
 )));
 ```
 
