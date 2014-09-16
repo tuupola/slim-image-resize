@@ -2,3 +2,5 @@ vendor
 node_modules
 .rocketeer
 .tm_properties
+.DS_Store
+composer.lock
