@@ -34,6 +34,8 @@ $app->add(new Slim\Middleware\ImageResize(array(
 )));
 ```
 
+## Caching
+
 For caching to work you also must add the following to your [.htaccess](https://github.com/tuupola/slim-image-resize/blob/master/example/.htaccess) file. These rules should be added before Slim rewrite rules. Folder name must be the same you passed in as middleware configuration option. With caching rewrite rules in place only first request is served by PHP. All subsequent requests are served with static file from cache folder.
 
 ```
@@ -41,6 +43,17 @@ For caching to work you also must add the following to your [.htaccess](https://
 RewriteCond %{REQUEST_METHOD} ^GET$
 RewriteCond %{DOCUMENT_ROOT}/cache/%{REQUEST_URI} -f
 RewriteRule ^(.*)$ /cache/$1 [L,QSA]
+```
+
+## Security
+
+By default it is possible to create any size image. If images are also cached you should restrict which sizes middleware is allowed to create.
+
+```php
+$app = new \Slim\Slim();
+$app->add(new Slim\Middleware\ImageResize(array(
+    "sizes" => array("400x200", "x200", "200x", "100x100")
+)));
 ```
 
 ## Usage
