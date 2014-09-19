@@ -20,7 +20,8 @@ class ImageResize extends \Slim\Middleware {
             "extensions" => array("jpg", "jpeg", "png", "gif"),
             "cache" => "cache",
             "quality" => 90,
-            "sizes" => null
+            "sizes" => null,
+            "secret" => null
         );
 
         if ($options) {
@@ -38,10 +39,11 @@ class ImageResize extends \Slim\Middleware {
         $cache    = $_SERVER["DOCUMENT_ROOT"] . "/" .
                     $this->options["cache"] . $target;
 
-        $matched  = !!preg_match("/([^-]+)-((\d*)x(\d*))/", $pathinfo["filename"], $matches);
+        $matched  = !!preg_match("/([^-]+)-((\d*)x(\d*))-?([0-9a-z]*)/", $pathinfo["filename"], $matches);
 
         if ($matched && $this->allowedExtension($pathinfo["extension"])) {
 
+            /* Path to original image. */
             $source = $_SERVER["DOCUMENT_ROOT"] . $pathinfo["dirname"] . "/" .
                       $matches[1] . "." . $pathinfo["extension"];
 
@@ -49,7 +51,10 @@ class ImageResize extends \Slim\Middleware {
             $width  = $matches[3] ? $matches[3] : null;
             $height = $matches[4] ? $matches[4] : null;
 
-            if ($this->allowedSize($size)) {
+            $signature = $matches[5] ? $matches[5] : null;
+
+            if ($this->allowedSize($size) &&
+                $this->validSignature(array("signature" => $signature, "size" => $size))) {
 
                 $image = Image::make($source);
 
@@ -94,4 +99,50 @@ class ImageResize extends \Slim\Middleware {
             return is_array($this->options["sizes"]) && in_array($size, $this->options["sizes"]);
         }
     }
+
+    private function validSignature($parameters = null) {
+
+        /* Default arguments. */
+        $arguments = array(
+            "size" => null,
+            "signature" => null
+        );
+
+        if ($parameters) {
+            $arguments = array_merge($arguments, (array)$parameters);
+        }
+
+        if (false == !!$this->options["secret"] && null === $arguments["signature"]) {
+            /* No secret is set or passed. All shall pass. */
+            return true;
+        } else {
+            $signature = self::signature(array(
+                "size" => $arguments["size"],
+                "secret" => $this->options["secret"]
+            ));
+
+            return $arguments["signature"] === $signature;
+        }
+
+    }
+
+    public static function signature($parameters = null) {
+        /* Default arguments. */
+        $arguments = array(
+            "size" => null,
+            "secret" => null,
+            "width" => null,
+            "height" => null
+        );
+
+        if ($parameters) {
+            $arguments = array_merge($arguments, (array)$parameters);
+        }
+
+        $sha1 = sha1("{$arguments["size"]}:{$arguments["secret"]}");
+
+        /* We use only 16 first characters. Secure enough. */
+        return substr($sha1, 0, 16);
+    }
+
 }

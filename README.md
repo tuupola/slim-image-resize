@@ -45,17 +45,6 @@ RewriteCond %{DOCUMENT_ROOT}/cache/%{REQUEST_URI} -f
 RewriteRule ^(.*)$ /cache/$1 [L,QSA]
 ```
 
-## Security
-
-By default it is possible to create any size image. If images are also cached you should restrict which sizes middleware is allowed to create.
-
-```php
-$app = new \Slim\Slim();
-$app->add(new Slim\Middleware\ImageResize(array(
-    "sizes" => array("400x200", "x200", "200x", "100x100")
-)));
-```
-
 ## Usage
 
 With middleware configured you can create different sizes of images by altering the filename.
@@ -78,4 +67,34 @@ HTML above will produce the following images.
 ![200x](http://www.appelsiini.net/img/viper-200x.jpg)
 ![100x100](http://www.appelsiini.net/img/viper-100x100.jpg)
 
+## Security
 
+By default it is possible to create any size image. If images are also cached you should restrict which sizes middleware is allowed to create. Otherwise it is possible to make requests arbitary number of different sizes of images.
+
+```php
+$app = new \Slim\Slim();
+$app->add(new Slim\Middleware\ImageResize(array(
+    "sizes" => array("400x200", "x200", "200x", "100x100")
+)));
+```
+
+If you have arbitary number of different sizes it is also possible to sign images with secret key.
+
+```php
+$app->add(new Slim\Middleware\ImageResize(array(
+    "secret" => "s11kr3t"
+)));
+```
+
+You must include the signature in the image name.
+
+```html
+<img src="images/viper-400x200-175ecbf97b7faebb.jpg">
+```
+
+Signature for above image was generated with following code.
+
+```php
+$sha1 = sha1("400x200:s11kr3t");
+$signature = substr($sha1, 0, 16);
+```
