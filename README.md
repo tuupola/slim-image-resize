@@ -9,10 +9,10 @@ This middleware implements automatic image resizing based on image filename.
 
 ## Install
 
-You can install latest version using [composer](https://getcomposer.org/).
+You can install latest version using [composer](https://getcomposer.org/). Middleware is still in early development.
 
 ```javascript
-$ composer require tuupola/slim-image-resize
+$ composer require tuupola/slim-image-resize:dev-master
 ```
 
 ## Configuration
