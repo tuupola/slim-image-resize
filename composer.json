@@ -13,7 +13,7 @@
         }
     ],
     "require": {
-        "slim/slim": "~2.3"
+        "slim/slim": "~2.3",
         "intervention/image": "~1.0"
     },
     "autoload": {
