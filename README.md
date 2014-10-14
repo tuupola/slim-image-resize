@@ -4,19 +4,15 @@ This middleware implements automatic image resizing based on image filename.
 
 [![Author](http://img.shields.io/badge/author-@tuupola-blue.svg?style=flat-square)](https://twitter.com/tuupola)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.txt)
-[![Build Status](https://img.shields.io/travis/tuupola/slim-image-resize/master.svg?style=flat-square)](https://travis-ci.org/tuupola/slim-image-resize) 
+[![Build Status](https://img.shields.io/travis/tuupola/slim-image-resize/master.svg?style=flat-square)](https://travis-ci.org/tuupola/slim-image-resize)
 [![HHVM Status](https://img.shields.io/hhvm/tuupola/slim-image-resize.svg?style=flat-square)](http://hhvm.h4cc.de/package/tuupola/slim-image-resize)
 
 ## Install
 
-You can install the middleware using composer.
+You can install latest version using [composer](https://getcomposer.org/).
 
 ```javascript
-{
-    "require": {
-        "tuupola/slim-image-resize": "dev-master"
-    }
-}
+$ composer require tuupola/slim-basic-auth
 ```
 
 ## Configuration
