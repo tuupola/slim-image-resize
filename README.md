@@ -12,7 +12,7 @@ This middleware implements automatic image resizing based on image filename.
 You can install latest version using [composer](https://getcomposer.org/).
 
 ```javascript
-$ composer require tuupola/slim-basic-auth
+$ composer require tuupola/slim-image-resize
 ```
 
 ## Configuration
