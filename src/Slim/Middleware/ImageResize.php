@@ -1,14 +1,21 @@
 <?php
 
+/*
+ * Automagical image resizing from Slim
+ *
+ * Copyright (c) 2013-2014 Mika Tuupola
+ *
+ * Licensed under the MIT license:
+ *   http://www.opensource.org/licenses/mit-license.php
+ *
+ * Project home:
+ *   https://github.com/tuupola/slim-image-resize
+ *
+ */
+
 namespace Slim\Middleware;
 use Intervention\Image\Image;
 
-/**
- * Provides automagical image resizing.
- *
- * @package    Slim
- * @author     Mika Tuupola <tuupola@appelsiini.net>
- */
 class ImageResize extends \Slim\Middleware {
 
     public $options;
