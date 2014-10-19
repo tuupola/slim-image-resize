@@ -16,11 +16,13 @@
 namespace Slim\Middleware;
 
 use Intervention\Image\Image;
+use Slim\Middleware\ImageResize\DefaultMutator;
 
 class ImageResize extends \Slim\Middleware
 {
 
     public $options;
+    private $mutator;
 
     public function __construct($options = null)
     {
@@ -29,6 +31,7 @@ class ImageResize extends \Slim\Middleware
         $this->options = array(
             "extensions" => array("jpg", "jpeg", "png", "gif"),
             "cache" => "cache",
+            "regexp" => "/(?<original>[^-]+)-(?<size>(?<width>\d*)x(?<height>\d*))-?(?<signature>[0-9a-z]*)/",
             "quality" => 90,
             "sizes" => null,
             "secret" => null
@@ -39,70 +42,79 @@ class ImageResize extends \Slim\Middleware
         }
     }
 
+    public function parse($target)
+    {
+        $pathinfo = pathinfo($target);
+        if (preg_match($this->options["regexp"], $pathinfo["filename"], $matches)) {
+            foreach ($matches as $key => $value) {
+                if (empty($value)) {
+                    $matches[$key] = null;
+                }
+                if (is_numeric($key)) {
+                    unset($matches[$key]);
+                }
+            }
+
+            /* TODO: Make these pretty. */
+            $extra["cache"] = $_SERVER["DOCUMENT_ROOT"] . "/" .
+                    $this->options["cache"] . "/" . $target;
+
+            $extra["source"] = $_SERVER["DOCUMENT_ROOT"] . "/" . $pathinfo["dirname"] . "/" .
+                                 $matches["original"] . "." . $pathinfo["extension"];
+
+            return array_merge($matches, $pathinfo, $extra);
+        }
+        return false;
+    }
+
     public function call()
     {
         $request  = $this->app->request;
         $response = $this->app->response;
 
         $target   = $request->getResourceUri();
-        $pathinfo = pathinfo($target);
 
-        $cache    = $_SERVER["DOCUMENT_ROOT"] . "/" .
-                    $this->options["cache"] . $target;
+        if ($matched = $this->parse($target)) {
+            extract($matched);
+        };
 
-        $matched  = !!preg_match("/([^-]+)-((\d*)x(\d*))-?([0-9a-z]*)/", $pathinfo["filename"], $matches);
+        /* Extract array variables to current symbol table */
+        if ($matched && $this->allowed(["extension" => $extension, "size" => $size, "signature" => $signature])) {
 
-        if ($matched && $this->allowedExtension($pathinfo["extension"])) {
+            $this->mutator = new DefaultMutator($matched);
+            $this->mutator->execute();
 
-            /* Path to original image. */
-            $source = $_SERVER["DOCUMENT_ROOT"] . $pathinfo["dirname"] . "/" .
-                      $matches[1] . "." . $pathinfo["extension"];
-
-            $size   = $matches[2] ? $matches[2] : null;
-            $width  = $matches[3] ? $matches[3] : null;
-            $height = $matches[4] ? $matches[4] : null;
-
-            $signature = $matches[5] ? $matches[5] : null;
-
-            if ($this->allowedSize($size) &&
-                $this->validSignature(array("signature" => $signature, "size" => $size))) {
-
-                $image = Image::make($source);
-
-                /* Crop or resize. */
-                if (null !== $width && null !== $height) {
-                    $image->grab($width, $height);
-                } else {
-                    $image->resize($width, $height, true);
+            /* When requested save image to cache folder. */
+            if ($this->options["cache"]) {
+                $dir = pathinfo($cache, PATHINFO_DIRNAME);
+                if (false === is_dir($dir)) {
+                    mkdir($dir, 0777, true);
                 }
-
-                /* When requested save image to cache folder. */
-                if ($this->options["cache"]) {
-                    $dir = pathinfo($cache, PATHINFO_DIRNAME);
-                    if (false === is_dir($dir)) {
-                        mkdir($dir, 0777, true);
-                    }
-                    $image->save($cache, $this->options["quality"]);
-                }
-
-                $response->header("Content-type", $image->mime);
-                $response->body($image->encode());
-
-            } else {
-                 $this->next->call();
+                $this->mutator->save();
             }
+
+            $response->header("Content-type", $this->mutator->mime());
+            $response->body($this->mutator->encode());
 
         } else {
             $this->next->call();
         }
     }
 
-    private function allowedExtension($extension = null)
+    public function allowed($parameters = array())
+    {
+        extract($parameters);
+        return $this->allowedExtension($extension) &&
+               $this->allowedSize($size) &&
+               $this->validSignature($parameters);
+    }
+
+    public function allowedExtension($extension = null)
     {
         return $extension && in_array($extension, $this->options["extensions"]);
     }
 
-    private function allowedSize($size = null)
+    public function allowedSize($size = null)
     {
         if (false == !!$this->options["sizes"]) {
             /* All sizes are allowed. */
@@ -113,7 +125,7 @@ class ImageResize extends \Slim\Middleware
         }
     }
 
-    private function validSignature($parameters = null)
+    public function validSignature($parameters = null)
     {
         /* Default arguments. */
         $arguments = array(
