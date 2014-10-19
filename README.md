@@ -6,6 +6,7 @@ This middleware implements automatic image resizing based on image filename.
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.txt)
 [![Build Status](https://img.shields.io/travis/tuupola/slim-image-resize/master.svg?style=flat-square)](https://travis-ci.org/tuupola/slim-image-resize)
 [![HHVM Status](https://img.shields.io/hhvm/tuupola/slim-image-resize.svg?style=flat-square)](http://hhvm.h4cc.de/package/tuupola/slim-image-resize)
+[![Coverage](http://img.shields.io/codecov/c/github/tuupola/slim-image-resize.svg?style=flat-square)](https://codecov.io/github/tuupola/slim-image-resize)
 
 ## Install
 
