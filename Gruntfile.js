@@ -9,8 +9,8 @@ module.exports = function(grunt) {
                 tasks: ["jshint"]
             },
             php: {
-                files: ["src/**/*.php"],
-                tasks: ["phplint"]
+                files: ["src/**/*.php", "test/*.php"],
+                tasks: ["testphp"]
             }
         },
         jshint: {
@@ -23,7 +23,27 @@ module.exports = function(grunt) {
             options: {
                 swapPath: "/tmp"
             },
-            all: ["src/**/*.php"]
+            all: ["src/**/*.php", "test/*.php"]
+        },
+        phpunit: {
+            unit: {
+                dir: "test"
+            },
+            options: {
+                bin: "vendor/bin/phpunit --bootstrap=vendor/autoload.php --coverage-text --coverage-html ./report",
+                //bootstrap: "test/bootstrap.php",
+                colors: true,
+                testdox: false
+            }
+        },
+        phpcs: {
+            application: {
+                dir: ["src/**/*.php", "test/*.php"]
+            },
+            options: {
+                bin: "vendor/bin/phpcs",
+                standard: "PSR2"
+            }
         }
     });
 
@@ -32,9 +52,9 @@ module.exports = function(grunt) {
     /*
     grunt.registerTask("build", ["concat", "uglify", "cssmin"]);
     grunt.registerTask("test", ["jshint", "jasmine"]);
-    grunt.registerTask("testphp", ["phplint", "phpunit"]);
     grunt.registerTask("default", ["testphp", "test", "build"]);
     */
-    grunt.registerTask("default", ["jshint", "phplint"]);
+    grunt.registerTask("testphp", ["phplint", "phpcs", "phpunit"]);
+    grunt.registerTask("default", ["jshint", "testphp"]);
 
 };
