@@ -56,7 +56,7 @@ class ImageResizeTest extends \PHPUnit_Framework_TestCase
 
     public function testSpecificSizesShouldBeAllowed()
     {
-        $middleware = new ImageResize(["sizes" => ["100x100", "150x"]]);
+        $middleware = new ImageResize(array("sizes" => array("100x100", "150x")));
         $this->assertTrue($middleware->allowedSize("100x100"));
         $this->assertTrue($middleware->allowedSize("150x"));
         $this->assertFalse($middleware->allowedSize("666x666"));
@@ -64,7 +64,7 @@ class ImageResizeTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldGenerateSignature()
     {
-        $signature = ImageResize::signature(["size" => "100x200", "secret" => "s11kr3t"]);
+        $signature = ImageResize::signature(array("size" => "100x200", "secret" => "s11kr3t"));
         $this->assertEquals($signature, "e28fe00b3c925c09");
     }
 
@@ -76,40 +76,56 @@ class ImageResizeTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldValidateSignature()
     {
-        $middleware = new ImageResize(["secret" => "s11kr3t"]);
-        $signature = ImageResize::signature(["size" => "100x200", "secret" => "s11kr3t"]);
+        $middleware = new ImageResize(array("secret" => "s11kr3t"));
+        $signature = ImageResize::signature(array("size" => "100x200", "secret" => "s11kr3t"));
         $this->assertFalse($middleware->validSignature());
-        $this->assertTrue($middleware->validSignature(["signature" => $signature, "size" => "100x200"]));
+        $this->assertTrue($middleware->validSignature(array("signature" => $signature, "size" => "100x200")));
     }
 
     public function testImagesShouldBeAllowed()
     {
-        $middleware = new ImageResize([
-            "sizes" => ["100x200", "100x100"],
+        $middleware = new ImageResize(array(
+            "sizes" => array("100x200", "100x100"),
             "secret" => "s11kr3t"
-        ]);
+        ));
 
-        $valid = ImageResize::signature(["size" => "100x200", "secret" => "s11kr3t"]);
-        $valid_2 = ImageResize::signature(["size" => "100x100", "secret" => "s11kr3t"]);
+        $valid = ImageResize::signature(array("size" => "100x200", "secret" => "s11kr3t"));
+        $valid_2 = ImageResize::signature(array("size" => "100x100", "secret" => "s11kr3t"));
 
-        $this->assertTrue($middleware->allowed(["signature" => $valid, "size" => "100x200", "extension" => "jpg"]));
-        $this->assertTrue($middleware->allowed(["signature" => $valid_2, "size" => "100x100", "extension" => "png"]));
+        $this->assertTrue($middleware->allowed(array(
+            "signature" => $valid,
+            "size" => "100x200",
+            "extension" => "jpg")));
+
+        $this->assertTrue($middleware->allowed(array(
+            "signature" => $valid_2,
+            "size" => "100x100",
+            "extension" => "png")));
     }
 
     public function testImagesShouldNotBeAllowed()
     {
-        $middleware = new ImageResize([
-            "extensions" => ["jpg", "png"],
-            "sizes" => ["100x200", "100x100"],
+        $middleware = new ImageResize(array(
+            "extensions" => array("jpg", "png"),
+            "sizes" => array("100x200", "100x100"),
             "secret" => "s11kr3t"
-        ]);
+        ));
 
-        $valid = ImageResize::signature(["size" => "100x200", "secret" => "s11kr3t"]);
-        $valid_2 = ImageResize::signature(["size" => "666x666", "secret" => "s11kr3t"]);
-        $invalid = ImageResize::signature(["size" => "100x200", "secret" => "t00r"]);
+        $valid = ImageResize::signature(array("size" => "100x200", "secret" => "s11kr3t"));
+        $valid_2 = ImageResize::signature(array("size" => "666x666", "secret" => "s11kr3t"));
+        $invalid = ImageResize::signature(array("size" => "100x200", "secret" => "t00r"));
 
-        $this->assertFalse($middleware->allowed(["signature" => $invalid, "size" => "100x200", "extension" => "jpg"]));
-        $this->assertFalse($middleware->allowed(["signature" => $valid_2, "size" => "666x666", "extension" => "png"]));
-        $this->assertFalse($middleware->allowed(["signature" => $valid, "size" => "100x200", "extension" => "pdf"]));
+        $this->assertFalse($middleware->allowed(array(
+            "signature" => $invalid,
+            "size" => "100x200",
+            "extension" => "jpg")));
+        $this->assertFalse($middleware->allowed(array(
+            "signature" => $valid_2,
+            "size" => "666x666",
+            "extension" => "png")));
+        $this->assertFalse($middleware->allowed(array(
+            "signature" => $valid,
+            "size" => "100x200",
+            "extension" => "pdf")));
     }
 }

@@ -75,11 +75,11 @@ class ImageResize extends \Slim\Middleware
         $target   = $request->getResourceUri();
 
         if ($matched = $this->parse($target)) {
+            /* Extract array variables to current symbol table */
             extract($matched);
         };
 
-        /* Extract array variables to current symbol table */
-        if ($matched && $this->allowed(["extension" => $extension, "size" => $size, "signature" => $signature])) {
+        if ($matched && $this->allowed(array("extension" => $extension, "size" => $size, "signature" => $signature))) {
 
             $this->mutator = new DefaultMutator($matched);
             $this->mutator->execute();
