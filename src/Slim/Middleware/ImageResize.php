@@ -14,13 +14,16 @@
  */
 
 namespace Slim\Middleware;
+
 use Intervention\Image\Image;
 
-class ImageResize extends \Slim\Middleware {
+class ImageResize extends \Slim\Middleware
+{
 
     public $options;
 
-    public function __construct($options = null) {
+    public function __construct($options = null)
+    {
 
         /* Default options. */
         $this->options = array(
@@ -36,7 +39,8 @@ class ImageResize extends \Slim\Middleware {
         }
     }
 
-    public function call() {
+    public function call()
+    {
         $request  = $this->app->request;
         $response = $this->app->response;
 
@@ -93,11 +97,13 @@ class ImageResize extends \Slim\Middleware {
         }
     }
 
-    private function allowedExtension($extension = null) {
+    private function allowedExtension($extension = null)
+    {
         return $extension && in_array($extension, $this->options["extensions"]);
     }
 
-    private function allowedSize($size = null) {
+    private function allowedSize($size = null)
+    {
         if (false == !!$this->options["sizes"]) {
             /* All sizes are allowed. */
             return true;
@@ -107,8 +113,8 @@ class ImageResize extends \Slim\Middleware {
         }
     }
 
-    private function validSignature($parameters = null) {
-
+    private function validSignature($parameters = null)
+    {
         /* Default arguments. */
         $arguments = array(
             "size" => null,
@@ -130,10 +136,10 @@ class ImageResize extends \Slim\Middleware {
 
             return $arguments["signature"] === $signature;
         }
-
     }
 
-    public static function signature($parameters = null) {
+    public static function signature($parameters = null)
+    {
         /* Default arguments. */
         $arguments = array(
             "size" => null,
@@ -151,5 +157,4 @@ class ImageResize extends \Slim\Middleware {
         /* We use only 16 first characters. Secure enough. */
         return substr($sha1, 0, 16);
     }
-
 }
