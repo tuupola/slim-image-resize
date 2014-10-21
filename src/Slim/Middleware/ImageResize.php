@@ -21,8 +21,8 @@ use Slim\Middleware\ImageResize\DefaultMutator;
 class ImageResize extends \Slim\Middleware
 {
 
-    public $options;
-    private $mutator;
+    protected $options;
+    public $mutator;
 
     public function __construct($options = null)
     {
@@ -31,40 +31,18 @@ class ImageResize extends \Slim\Middleware
         $this->options = array(
             "extensions" => array("jpg", "jpeg", "png", "gif"),
             "cache" => "cache",
-            "regexp" => "/(?<original>[^-]+)-(?<size>(?<width>\d*)x(?<height>\d*))-?(?<signature>[0-9a-z]*)/",
-            "quality" => 90,
             "sizes" => null,
-            "secret" => null
+            "secret" => null,
+            "mutator" => new DefaultMutator()
         );
 
         if ($options) {
             $this->options = array_merge($this->options, (array)$options);
         }
-    }
 
-    public function parse($target)
-    {
-        $pathinfo = pathinfo($target);
-        if (preg_match($this->options["regexp"], $pathinfo["filename"], $matches)) {
-            foreach ($matches as $key => $value) {
-                if (empty($value)) {
-                    $matches[$key] = null;
-                }
-                if (is_numeric($key)) {
-                    unset($matches[$key]);
-                }
-            }
-
-            /* TODO: Make these pretty. */
-            $extra["cache"] = $_SERVER["DOCUMENT_ROOT"] . "/" .
-                    $this->options["cache"] . "/" . $target;
-
-            $extra["source"] = $_SERVER["DOCUMENT_ROOT"] . "/" . $pathinfo["dirname"] . "/" .
-                                 $matches["original"] . "." . $pathinfo["extension"];
-
-            return array_merge($matches, $pathinfo, $extra);
-        }
-        return false;
+        /* TODO: Use proper DI. */
+        $this->mutator = $this->options["mutator"];
+        unset($this->options["mutator"]);
     }
 
     public function call()
@@ -73,24 +51,27 @@ class ImageResize extends \Slim\Middleware
         $response = $this->app->response;
 
         $target   = $request->getResourceUri();
-
-        if ($matched = $this->parse($target)) {
+        if ($matched = $this->mutator->parse($target)) {
             /* Extract array variables to current symbol table */
             extract($matched);
         };
 
         if ($matched && $this->allowed(array("extension" => $extension, "size" => $size, "signature" => $signature))) {
 
-            $this->mutator = new DefaultMutator($matched);
+            $this->mutator->options($matched);
             $this->mutator->execute();
 
             /* When requested save image to cache folder. */
             if ($this->options["cache"]) {
+                /* TODO: Make this pretty. */
+                $cache = $_SERVER["DOCUMENT_ROOT"] . "/" .
+                         $this->options["cache"] . "/" . $target;
+
                 $dir = pathinfo($cache, PATHINFO_DIRNAME);
                 if (false === is_dir($dir)) {
                     mkdir($dir, 0777, true);
                 }
-                $this->mutator->save();
+                $this->mutator->save($cache);
             }
 
             $response->header("Content-type", $this->mutator->mime());

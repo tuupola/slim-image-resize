@@ -1,27 +1,34 @@
 <?php
 
+/*
+ * Automagical image resizing from Slim
+ *
+ * Copyright (c) 2013-2014 Mika Tuupola
+ *
+ * Licensed under the MIT license:
+ *   http://www.opensource.org/licenses/mit-license.php
+ *
+ * Project home:
+ *   https://github.com/tuupola/slim-image-resize
+ *
+ */
+
 namespace Slim\Middleware\ImageResize;
 
 use Intervention\Image\Image;
 
-class DefaultMutator implements MutatorInterface
+class DefaultMutator extends MutatorAbstract
 {
-    private $options;
-    public $image;
+    protected static $regexp = "/(?<original>[^-]+)-(?<size>(?<width>\d*)x(?<height>\d*))-?(?<signature>[0-9a-z]*)/";
+    private $image;
 
-    public function __construct($options = array())
+    public function options($options = array())
     {
+        parent::options($options);
 
-        /* Default options. */
-        $this->options = array(
-        );
-
-        if ($options) {
-            $this->options = array_merge($this->options, $options);
+        if (isset($this->options["source"])) {
+            $this->image = Image::make($this->options["source"]);
         }
-
-        extract($this->options);
-        $this->image = Image::make($source);
     }
 
     public function execute()
@@ -37,10 +44,9 @@ class DefaultMutator implements MutatorInterface
         return $this;
     }
 
-    public function save($quality = 90)
+    public function save($file)
     {
-        extract($this->options);
-        return $this->image->save($cache, $quality);
+        return $this->image->save($file, $this->options["quality"]);
     }
 
     public function mime()

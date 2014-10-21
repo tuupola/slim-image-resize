@@ -3,6 +3,7 @@
 namespace Test;
 
 use Slim\Middleware\ImageResize;
+use Slim\Middleware\ImageResize\DefaultMutator;
 
 class ImageResizeTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,7 +18,7 @@ class ImageResizeTest extends \PHPUnit_Framework_TestCase
         $_SERVER["DOCUMENT_ROOT"] = "/var/www/www.example.com/public";
 
         $middleware = new ImageResize();
-        $parsed = $middleware->parse("images/viper-400x200.jpg");
+        $parsed = $middleware->mutator->parse("images/viper-400x200.jpg");
         $this->assertEquals($parsed["filename"], "viper-400x200");
         $this->assertEquals($parsed["basename"], "viper-400x200.jpg");
         $this->assertEquals($parsed["extension"], "jpg");
@@ -27,14 +28,14 @@ class ImageResizeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($parsed["width"], "400");
         $this->assertEquals($parsed["height"], "200");
         $this->assertEquals($parsed["source"], "/var/www/www.example.com/public/images/viper.jpg");
-        $this->assertEquals($parsed["cache"], "/var/www/www.example.com/public/cache/images/viper-400x200.jpg");
+        //$this->assertEquals($parsed["cache"], "/var/www/www.example.com/public/cache/images/viper-400x200.jpg");
         $this->assertNull($parsed["signature"]);
     }
 
     public function testParseShouldReturnFalse()
     {
         $middleware = new ImageResize();
-        $parsed = $middleware->parse("images/viper-new.jpg");
+        $parsed = $middleware->mutator->parse("images/viper-new.jpg");
         $this->assertFalse($parsed);
     }
 
