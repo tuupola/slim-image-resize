@@ -15,10 +15,13 @@
 
 namespace Slim\Middleware\ImageResize;
 
+use Intervention\Image\Image;
+
 abstract class MutatorAbstract implements MutatorInterface
 {
 
     protected $options = array("quality" => 90); /* Set defaults here. */
+    protected $image;
 
     public function __construct($options = array())
     {
@@ -29,6 +32,10 @@ abstract class MutatorAbstract implements MutatorInterface
     {
         if ($options) {
             $this->options = array_merge($this->options, $options);
+        }
+
+        if (isset($this->options["source"])) {
+            $this->image = Image::make($this->options["source"]);
         }
     }
 
@@ -58,8 +65,20 @@ abstract class MutatorAbstract implements MutatorInterface
         return false;
     }
 
+    public function save($file)
+    {
+        return $this->image->save($file, $this->options["quality"]);
+    }
+
+    public function mime()
+    {
+        return $this->image->mime;
+    }
+
+    public function encode()
+    {
+        return $this->image->encode();
+    }
+
     abstract public function execute();
-    abstract public function save($file);
-    abstract public function mime();
-    abstract public function encode();
 }
