@@ -15,7 +15,7 @@
 
 namespace Slim\Middleware\ImageResize;
 
-use Intervention\Image\Image;
+use Intervention\Image\ImageManagerStatic as Image;
 
 abstract class MutatorAbstract implements MutatorInterface
 {

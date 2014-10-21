@@ -14,7 +14,7 @@
     ],
     "require": {
         "slim/slim": "~2.3",
-        "intervention/image": "~1.0"
+        "intervention/image": "~2.0"
     },
     "autoload": {
         "psr-0": { "Slim\\Middleware\\": "src/" }

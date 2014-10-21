@@ -21,12 +21,14 @@ class DefaultMutator extends MutatorAbstract
 
     public function execute()
     {
-        /* Crop or resize. */
+        /* Fit or resize. */
         extract($this->options);
         if (null !== $width && null !== $height) {
-            $this->image->grab($width, $height);
+            $this->image->fit($width, $height);
         } else {
-            $this->image->resize($width, $height, true);
+            $this->image->resize($width, $height, function ($constraint) {
+                $constraint->aspectRatio();
+            });
         }
 
         return $this;
