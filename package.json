@@ -1,9 +1,9 @@
 {
-  "name": "europa-onneratas",
-  "version": "0.0.0-dev",
+  "name": "slim-image-resize",
+  "version": "0.5.0",
   "repository": {
     "type": "git",
-    "url": "git@github.com:taevas/toyota-leasing.git"
+    "url": "git@github.com:tuupola/slim-image-resize.git"
   },
   "author": "Mika Tuupola <tuupola@appelsiini.net>",
   "devDependencies": {

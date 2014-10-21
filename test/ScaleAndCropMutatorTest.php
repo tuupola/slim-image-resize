@@ -1,9 +1,9 @@
 <?php
 
 /*
- * Automagical image resizing from Slim
+ * This file is part of the Slim Image Resize middleware
  *
- * Copyright (c) 2013-2014 Mika Tuupola
+ * Copyright (c) 2014 Mika Tuupola
  *
  * Licensed under the MIT license:
  *   http://www.opensource.org/licenses/mit-license.php
