@@ -58,7 +58,6 @@ class ImageResize extends \Slim\Middleware
 
         if ($matched && $this->allowed(array("extension" => $extension, "size" => $size, "signature" => $signature))) {
 
-            $this->mutator->options($matched);
             $this->mutator->execute();
 
             /* When requested save image to cache folder. */

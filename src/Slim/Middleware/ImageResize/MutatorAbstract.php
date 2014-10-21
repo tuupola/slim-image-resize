@@ -21,7 +21,7 @@ abstract class MutatorAbstract implements MutatorInterface
 {
 
     protected $options = array("quality" => 90); /* Set defaults here. */
-    protected $image;
+    public $image;
 
     public function __construct($options = array())
     {
@@ -60,7 +60,10 @@ abstract class MutatorAbstract implements MutatorInterface
             $extra["source"] = $_SERVER["DOCUMENT_ROOT"] . "/" . $pathinfo["dirname"] . "/" .
                                $matches["original"] . "." . $pathinfo["extension"];
 
-            return array_merge($matches, $pathinfo, $extra);
+            $parsed = array_merge($matches, $pathinfo, $extra);
+            $this->options($parsed);
+
+            return $parsed;
         }
         return false;
     }
