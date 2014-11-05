@@ -10,10 +10,10 @@ This middleware implements automatic image resizing based on image filename.
 
 ## Install
 
-You can install latest version using [composer](https://getcomposer.org/). Middleware is still in early development.
+You can install latest version using [composer](https://getcomposer.org/).
 
-```javascript
-$ composer require tuupola/slim-image-resize:dev-master
+```
+$ composer require tuupola/slim-image-resize
 ```
 
 ## Configuration
@@ -29,11 +29,11 @@ You can configure the allowed image extensions and cache folder. Cache folder mu
 
 ```php
 $app = new \Slim\Slim();
-$app->add(new Slim\Middleware\ImageResize(array(
-    "extensions" => array("jpg", "jpeg", "png", "gif"),
+$app->add(new Slim\Middleware\ImageResize([
+    "extensions" => ["jpg", "jpeg", "png", "gif"],
     "cache" => "cache",
     "quality" => 90
-)));
+]));
 ```
 
 ## Caching
@@ -75,17 +75,17 @@ By default it is possible to create any size image. If images are also cached yo
 
 ```php
 $app = new \Slim\Slim();
-$app->add(new Slim\Middleware\ImageResize(array(
-    "sizes" => array("400x200", "x200", "200x", "100x100")
-)));
+$app->add(new Slim\Middleware\ImageResize([
+    "sizes" => ["400x200", "x200", "200x", "100x100"]
+]));
 ```
 
 If you have arbitary number of different sizes it is also possible to sign images with secret key.
 
 ```php
-$app->add(new Slim\Middleware\ImageResize(array(
+$app->add(new Slim\Middleware\ImageResize([
     "secret" => "s11kr3t"
-)));
+]));
 ```
 
 You must include the signature in the image name.
