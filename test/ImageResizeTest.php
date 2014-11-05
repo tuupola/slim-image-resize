@@ -21,6 +21,11 @@ use Slim\Middleware\ImageResize\DefaultMutator;
 class ImageResizeTest extends \PHPUnit_Framework_TestCase
 {
 
+    public function setUp()
+    {
+        $_SERVER["DOCUMENT_ROOT"] = __DIR__ . "/../example/";
+    }
+
     public function testShouldBeTrue()
     {
         $this->assertTrue(true);
@@ -115,5 +120,51 @@ class ImageResizeTest extends \PHPUnit_Framework_TestCase
             "signature" => $valid,
             "size" => "100x200",
             "extension" => "pdf")));
+    }
+
+    public function testShouldReturnImage()
+    {
+
+        \Slim\Environment::mock(array(
+            "SCRIPT_NAME" => "/index.php",
+            "PATH_INFO" => "/images/viper-200x200.jpg"
+        ));
+        $app = new \Slim\Slim();
+        $app->get("/foo", function () {
+            echo "Success";
+        });
+
+        $middleware = new \Slim\Middleware\ImageResize(array(
+        ));
+
+        $middleware->setApplication($app);
+        $middleware->setNextMiddleware($app);
+        $middleware->call();
+
+        $this->assertEquals(200, $app->response()->status());
+        $this->assertEquals("image/jpeg", $app->response()->header("Content-Type"));
+    }
+
+    public function testShouldReturnHtml()
+    {
+
+        \Slim\Environment::mock(array(
+            "SCRIPT_NAME" => "/index.php",
+            "PATH_INFO" => "/foo"
+        ));
+        $app = new \Slim\Slim();
+        $app->get("/foo", function () {
+            echo "Success";
+        });
+
+        $middleware = new \Slim\Middleware\ImageResize(array(
+        ));
+
+        $middleware->setApplication($app);
+        $middleware->setNextMiddleware($app);
+        $middleware->call();
+
+        $this->assertEquals(200, $app->response()->status());
+        $this->assertEquals("text/html", $app->response()->header("Content-Type"));
     }
 }
