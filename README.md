@@ -47,6 +47,20 @@ RewriteCond %{DOCUMENT_ROOT}/cache/%{REQUEST_URI} -f
 RewriteRule ^(.*)$ /cache/$1 [L,QSA]
 ```
 
+If your Slim application is installed in to a subfolder use the following rewrite rule instead. This example assumes the subfolder is called `example`.
+
+```
+RewriteBase /example
+
+# Check for cached image in cache folder.
+RewriteCond %{REQUEST_METHOD} ^GET$
+RewriteCond %{DOCUMENT_ROOT}/example/cache/%{REQUEST_URI} -f
+RewriteRule ^(.*)$ /example/cache/example/$1 [L,QSA]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]
+```
+
 ## Usage
 
 With middleware configured you can create different sizes of images by altering the filename.

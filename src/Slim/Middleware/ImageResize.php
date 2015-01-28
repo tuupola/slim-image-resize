@@ -50,7 +50,10 @@ class ImageResize extends \Slim\Middleware
         $request  = $this->app->request;
         $response = $this->app->response;
 
-        $target   = $request->getResourceUri();
+        $folder   = $request->getRootUri();
+        $resource = $request->getResourceUri();
+
+        $target   = $folder . $resource;
         if ($matched = $this->mutator->parse($target)) {
             /* Extract array variables to current symbol table */
             extract($matched);
@@ -63,8 +66,8 @@ class ImageResize extends \Slim\Middleware
             /* When requested save image to cache folder. */
             if ($this->options["cache"]) {
                 /* TODO: Make this pretty. */
-                $cache = $_SERVER["DOCUMENT_ROOT"] . "/" .
-                         $this->options["cache"] . "/" . $target;
+                $cache = $_SERVER["DOCUMENT_ROOT"] . $folder . "/" .
+                         $this->options["cache"] . $target;
 
                 $dir = pathinfo($cache, PATHINFO_DIRNAME);
                 if (false === is_dir($dir)) {
@@ -75,7 +78,6 @@ class ImageResize extends \Slim\Middleware
 
             $response->header("Content-type", $this->mutator->mime());
             $response->body($this->mutator->encode());
-
         } else {
             $this->next->call();
         }
